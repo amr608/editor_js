@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JS Runner</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#0d1117;
+  color:#fff;
+  font-family:'Fira Code', monospace;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+header{
+  background:#161b22;
+  padding:12px;
+  text-align:center;
+  font-weight:bold;
+  border-bottom:1px solid #30363d;
+}
+
+.editor{
+  flex:1;
+  display:flex;
+}
+
+.lines{
+  background:#161b22;
+  padding:10px 6px;
+  color:#8b949e;
+  text-align:right;
+  user-select:none;
+}
+
+.lines div{
+  height:20px;
+}
+
+textarea{
+  flex:1;
+  background:#0d1117;
+  color:#c9d1d9;
+  border:none;
+  padding:10px;
+  font-size:14px;
+  line-height:20px;
+  resize:none;
+  outline:none;
+}
+
+.controls{
+  background:#161b22;
+  padding:10px;
+  display:flex;
+  gap:10px;
+  border-top:1px solid #30363d;
+}
+
+button{
+  background:#238636;
+  color:#fff;
+  border:none;
+  padding:10px 18px;
+  border-radius:8px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:hover{background:#2ea043}
+
+.clear{background:#da3633}
+
+#output{
+  background:#000;
+  color:#00ff88;
+  padding:10px;
+  font-size:14px;
+  height:25vh;
+  overflow:auto;
+  border-top:1px solid #30363d;
+  white-space:pre-wrap;
+}
+</style>
+</head>
+
+<body>
+
+<header>JavaScript Runner</header>
+
+<div class="editor">
+  <div class="lines" id="lines"></div>
+  <textarea id="code" placeholder="اكتب هنا"></textarea>
+</div>
+
+<div class="controls">
+  <button onclick="runCode()">تشغيل</button>
+  <button class="clear" onclick="clearCode()">مسح</button>
+</div>
+
+<div id="output"></div>
+
+<script>
+const code = document.getElementById("code");
+const lines = document.getElementById("lines");
+const output = document.getElementById("output");
+
+function updateLines(){
+  lines.innerHTML="";
+  let count = code.value.split("\n").length;
+  for(let i=1;i<=count;i++){
+    let d=document.createElement("div");
+    d.textContent=i;
+    lines.appendChild(d);
+  }
+}
+code.addEventListener("input",updateLines);
+updateLines();
+
+function runCode(){
+  output.textContent="";
+  try{
+    const oldLog = console.log;
+    console.log = (...args)=>{
+      output.textContent += args.join(" ") + "\n";
+    };
+    eval(code.value);
+    console.log = oldLog;
+  }catch(e){
+    output.textContent = "❌ Error: " + e.message;
+  }
+}
+
+function clearCode(){
+  code.value="";
+  output.textContent="";
+  updateLines();
+}
+
+document.addEventListener("keydown",e=>{
+  if(e.ctrlKey && e.key==="Enter"){
+    runCode();
+  }
+});
+</script>
+
+</body>
+</html>
